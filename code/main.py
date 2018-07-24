@@ -15,9 +15,9 @@ from utils import pc_util
 parser = argparse.ArgumentParser()
 parser.add_argument('--phase', default='test', help='train or test [default: train]')
 parser.add_argument('--gpu', default='0', help='GPU to use [default: GPU 0]')
-parser.add_argument('--log_dir', default='../model/generator2_new6', help='Log dir [default: log]')
+parser.add_argument('--log_dir', default='../model/debug', help='Log dir [default: log]')
 parser.add_argument('--num_point', type=int, default=1024,help='Point Number [1024/2048] [default: 1024]')
-parser.add_argument('--up_ratio',  type=int,  default=4,   help='Upsampling Ratio [default: 2]')
+parser.add_argument('--up_ratio',  type=int,  default=2,   help='Upsampling Ratio [default: 2]')
 parser.add_argument('--max_epoch', type=int, default=120, help='Epoch to run [default: 500]')
 parser.add_argument('--batch_size', type=int, default=28, help='Batch Size during training [default: 32]')
 parser.add_argument('--learning_rate', type=float, default=0.001)
@@ -37,9 +37,9 @@ MAX_EPOCH = FLAGS.max_epoch
 BASE_LEARNING_RATE = FLAGS.learning_rate
 MODEL_DIR = FLAGS.log_dir
 
-print socket.gethostname()
-print FLAGS
-os.environ['CUDA_VISIBLE_DEVICES'] = GPU_INDEX
+print(socket.gethostname())
+print(FLAGS)
+#os.environ['CUDA_VISIBLE_DEVICES'] = GPU_INDEX
 
 def log_string(out_str):
     global LOG_FOUT
@@ -134,7 +134,7 @@ def train(assign_model_path=None):
 
         ###assign the generator with another model file
         if assign_model_path is not None:
-            print "Load pre-train model from %s"%(assign_model_path)
+            print("Load pre-train model from %s"%(assign_model_path))
             assign_saver = tf.train.Saver(var_list=[var for var in tf.trainable_variables() if var.name.startswith("generator")])
             assign_saver.restore(sess, assign_model_path)
 
@@ -184,7 +184,7 @@ def train_one_epoch(sess, ops, fetchworker, train_writer):
 
     loss_sum = np.asarray(loss_sum)
     log_string('step: %d mean gen_loss_emd: %f\n' % (step, round(loss_sum.mean(),4)))
-    print 'read data time: %s mean gen_loss_emd: %f' % (round(fetch_time,4), round(loss_sum.mean(),4))
+    print('read data time: %s mean gen_loss_emd: %f' % (round(fetch_time,4), round(loss_sum.mean(),4)))
 
 
 def prediction_whole_model(data_folder=None,show=False,use_normal=False):
@@ -206,7 +206,7 @@ def prediction_whole_model(data_folder=None,show=False,use_normal=False):
                                       reuse=None, use_normal=use_normal, use_bn=False, use_ibn=False, bn_decay=0.95, up_ratio=UP_RATIO)
     saver = tf.train.Saver()
     _, restore_model_path = model_utils.pre_load_checkpoint(MODEL_DIR)
-    print restore_model_path
+    print(restore_model_path)
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -226,7 +226,7 @@ def prediction_whole_model(data_folder=None,show=False,use_normal=False):
             if not use_normal:
                 input = input[:,:,0:3]
                 gt = gt[:,0:3]
-            print item, input.shape
+            print(item, input.shape)
 
             start_time = time.time()
             pred_pl = sess.run(pred, feed_dict={pointclouds_ipt: input})
@@ -244,13 +244,14 @@ def prediction_whole_model(data_folder=None,show=False,use_normal=False):
             data_provider.save_pl(path, np.hstack((pred_pl[0, ...],norm_pl[0, ...])))
             path = path[:-4]+'_input.xyz'
             data_provider.save_pl(path, input[0])
-        print total_time/20
+        print(total_time/20)
 
 if __name__ == "__main__":
     np.random.seed(int(time.time()))
     tf.set_random_seed(int(time.time()))
     if PHASE=='train':
         # copy the code
+        print(os.path.join(MODEL_DIR, 'code/'))
         assert not os.path.exists(os.path.join(MODEL_DIR, 'code/'))
         os.makedirs(os.path.join(MODEL_DIR, 'code/'))
         os.system('cp -r * %s' % (os.path.join(MODEL_DIR, 'code/')))  # bkp of model def

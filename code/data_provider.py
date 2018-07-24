@@ -1,7 +1,7 @@
 import numpy as np
 import h5py
 import time
-import Queue
+import queue
 import threading
 import cv2
 from utils import show3d
@@ -20,12 +20,12 @@ def normalize_point_cloud(input):
 
 def load_patch_data(h5_filename='../h5_data/Patches_noHole_and_collected.h5', skip_rate = 1,num_point=2048, use_randominput=True, norm=False):
     if use_randominput:
-        print "use randominput, input h5 file is:", h5_filename
+        print("use randominput, input h5 file is:", h5_filename)
         f = h5py.File(h5_filename)
         input = f['poisson_4096'][:]
         gt = f['poisson_4096'][:]
     else:
-        print "Do not randominput, input h5 file is:",h5_filename
+        print("Do not randominput, input h5 file is:",h5_filename)
         f = h5py.File(h5_filename)
         gt = f['poisson_4096'][:]
         input = f['montecarlo_1024'][:]
@@ -34,7 +34,7 @@ def load_patch_data(h5_filename='../h5_data/Patches_noHole_and_collected.h5', sk
     assert len(input) == len(gt)
 
     if norm:
-        print "Normalization the data"
+        print("Normalization the data")
         data_radius = np.ones(shape=(len(input)))
         centroid = np.mean(gt[:,:,0:3], axis=1, keepdims=True)
         gt[:,:,0:3] = gt[:,:,0:3] - centroid
@@ -43,7 +43,7 @@ def load_patch_data(h5_filename='../h5_data/Patches_noHole_and_collected.h5', sk
         input[:, :, 0:3] = input[:, :, 0:3] - centroid
         input[:, :, 0:3] = input[:, :, 0:3] / np.expand_dims(furthest_distance,axis=-1)
     else:
-        print "Do not normalization the data"
+        print("Do not normalization the data")
         centroid = np.mean(gt[:, :, 0:3], axis=1, keepdims=True)
         furthest_distance = np.amax(np.sqrt(np.sum((gt[:, :, 0:3] - centroid) ** 2, axis=-1)), axis=1, keepdims=True)
         data_radius = furthest_distance[0,:]
@@ -52,11 +52,11 @@ def load_patch_data(h5_filename='../h5_data/Patches_noHole_and_collected.h5', sk
     gt = gt[::skip_rate]
     data_radius = data_radius[::skip_rate]
     name = name[::skip_rate]
-
-    object_name = list(set([item.split('/')[-1].split('_')[0] for item in name]))
+    
+    object_name = list(set([item.decode('utf-8').split('/')[-1].split('_')[0] for item in name]))
     object_name.sort()
-    print "load object names {}".format(object_name)
-    print "total %d samples" % (len(input))
+    print("load object names {}".format(object_name))
+    print("total %d samples" % (len(input)))
     return input, gt, data_radius, name
 
 
@@ -145,7 +145,7 @@ def rotate_perturbation_point_cloud(batch_data, angle_sigma=0.03, angle_clip=0.0
         Return:
           BxNx3 array, rotated batch of point clouds
     """
-    for k in xrange(batch_data.shape[0]):
+    for k in range(batch_data.shape[0]):
         angles = np.clip(angle_sigma*np.random.randn(3), -angle_clip, angle_clip)
         Rx = np.array([[1,0,0],
                        [0,np.cos(angles[0]),-np.sin(angles[0])],
@@ -212,7 +212,7 @@ def nonuniform_sampling(num = 4096, sample_num = 1024):
 class Fetcher(threading.Thread):
     def __init__(self, input_data, gt_data, radius_data,batch_size,num_point, use_random_input,use_norm):
         super(Fetcher,self).__init__()
-        self.queue = Queue.Queue(50)
+        self.queue = queue.Queue(50)
         self.stopped = False
         self.input_data = input_data
         self.gt_data = gt_data
@@ -223,8 +223,8 @@ class Fetcher(threading.Thread):
         self.use_norm = use_norm
         self.sample_cnt = self.input_data.shape[0]
         self.num_batches = self.sample_cnt//self.batch_size
-        print "NUM_BATCH is %s"%(self.num_batches)
-        print self.use_random_input,self.use_norm
+        print("NUM_BATCH is %s"%(self.num_batches))
+        print(self.use_random_input,self.use_norm)
 
     def run(self):
         while not self.stopped:
@@ -244,7 +244,7 @@ class Fetcher(threading.Thread):
                 radius = self.radius_data[start_idx:end_idx].copy()
                 if self.use_random_input:
                     new_batch_input = np.zeros((self.batch_size, self.num_point,batch_input_data.shape[2]))
-                    for i in xrange(self.batch_size):
+                    for i in range(self.batch_size):
                         idx = nonuniform_sampling(self.input_data.shape[1], sample_num=self.num_point)
                         new_batch_input[i, ...] = batch_input_data[i][idx]
                     batch_input_data = new_batch_input
@@ -288,23 +288,23 @@ class Fetcher(threading.Thread):
 
     def shutdown(self):
         self.stopped = True
-        print "Shutdown ....."
+        print("Shutdown .....")
         while not self.queue.empty():
             self.queue.get()
-        print "Remove all queue data"
+        print("Remove all queue data")
 
 if __name__ == '__main__':
     folder = '/home/lqyu/workspace/PointSR/perfect_models'
     fetchworker = Fetcher(folder)
     fetchworker.start()
 
-    for cnt in xrange(200):
+    for cnt in range(200):
         start = time.time()
         input,gt,radius = fetchworker.fetch()
         assert len(input)==len(gt)
         assert len(input)==32
         end = time.time()
-        print cnt,end-start
+        print(cnt,end-start)
         for i in range(len(input)):
             cv2.imshow('data',input[i,:,0:3])
             while True:

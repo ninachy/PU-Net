@@ -46,4 +46,4 @@ if __name__=='__main__':
         xyz2[i]=np.roll(xyz2[i],i,axis=0)
     with tf.Session('') as sess:
         ret=sess.run(matched_out,feed_dict={xyz1_in:xyz1,xyz2_in:xyz2})
-    print ((xyz1-ret)**2).mean()
+    print(((xyz1-ret)**2).mean())
