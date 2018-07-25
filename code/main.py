@@ -17,7 +17,7 @@ parser.add_argument('--phase', default='test', help='train or test [default: tra
 parser.add_argument('--gpu', default='0', help='GPU to use [default: GPU 0]')
 parser.add_argument('--log_dir', default='../model/debug', help='Log dir [default: log]')
 parser.add_argument('--num_point', type=int, default=1024,help='Point Number [1024/2048] [default: 1024]')
-parser.add_argument('--up_ratio',  type=int,  default=2,   help='Upsampling Ratio [default: 2]')
+parser.add_argument('--up_ratio',  type=int,  default=4,   help='Upsampling Ratio [default: 2]')
 parser.add_argument('--max_epoch', type=int, default=120, help='Epoch to run [default: 500]')
 parser.add_argument('--batch_size', type=int, default=28, help='Batch Size during training [default: 32]')
 parser.add_argument('--learning_rate', type=float, default=0.001)
