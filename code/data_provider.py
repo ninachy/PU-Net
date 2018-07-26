@@ -182,17 +182,20 @@ def jitter_perturbation_point_cloud(batch_data, sigma=0.005, clip=0.02):
 def save_pl(path, pl):
     if not os.path.exists(os.path.split(path)[0]):
         os.makedirs(os.path.split(path)[0])
-    myfile = file(path, "w")
+    myfile = open(path, "w")
     point_num = pl.shape[0]
     for j in range(point_num):
         if len(pl[j])==3:
-            print >> myfile, "%f %f %f" % (pl[j,0],pl[j,1],pl[j,2])
+            print("%f %f %f" % (pl[j,0],pl[j,1],pl[j,2]), file=myfile)
+            #print >> myfile, "%f %f %f" % (pl[j,0],pl[j,1],pl[j,2])
         elif len(pl[j])==6:
-            print >> myfile, "%f %f %f %f %f %f" % (pl[j, 0], pl[j, 1], pl[j, 2],pl[j, 3],pl[j, 4],pl[j, 5])
+            print("%f %f %f %f %f %f" % (pl[j, 0], pl[j, 1], pl[j, 2],pl[j, 3],pl[j, 4],pl[j, 5]), file=myfile)
+            #print >> myfile, "%f %f %f %f %f %f" % (pl[j, 0], pl[j, 1], pl[j, 2],pl[j, 3],pl[j, 4],pl[j, 5])
             # print >> myfile, "%f %f %f %f %f %f %f" % (
             # pl[j, 0], pl[j, 1], pl[j, 2], pl[j, 3], pl[j, 4], pl[j, 5], pl[j, 2])
         elif len(pl[j])==7:
-            print >> myfile, "%f %f %f %f %f %f %f" % (pl[j, 0], pl[j, 1], pl[j, 2],pl[j, 3],pl[j, 4],pl[j, 5],pl[j, 2])
+            print("%f %f %f %f %f %f %f" % (pl[j, 0], pl[j, 1], pl[j, 2],pl[j, 3],pl[j, 4],pl[j, 5],pl[j, 2]),file=myfile)
+            #print >> myfile, "%f %f %f %f %f %f %f" % (pl[j, 0], pl[j, 1], pl[j, 2],pl[j, 3],pl[j, 4],pl[j, 5],pl[j, 2])
     myfile.close()
     if np.random.rand()>1.9:
         show3d.showpoints(pl[:, 0:3])
