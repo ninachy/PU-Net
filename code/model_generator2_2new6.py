@@ -53,7 +53,7 @@ def get_gen_model(point_cloud, is_training, scope, bradius = 1.0, reuse=None, us
             new_points_list = []
             for i in range(up_ratio):
                 concat_feat = tf.concat([up_l4_points, up_l3_points, up_l2_points, l1_points, l0_xyz], axis=-1)
-                concat_feat = tf.expand_dims(concat_feat, axis=2)
+                concat_feat = tf.expand_dims(concat_feat, axis=2) # [4, 1024, 1, 259]
                 concat_feat = tf_util2.conv2d(concat_feat, 256, [1, 1],
                                               padding='VALID', stride=[1, 1],
                                               bn=False, is_training=is_training,
@@ -64,8 +64,8 @@ def get_gen_model(point_cloud, is_training, scope, bradius = 1.0, reuse=None, us
                                              bn=use_bn, is_training=is_training,
                                              scope='conv_%d' % (i),
                                              bn_decay=bn_decay)
-                new_points_list.append(new_points)
-            net = tf.concat(new_points_list,axis=1)
+                new_points_list.append(new_points) 
+            net = tf.concat(new_points_list,axis=1) # [4, 1024*4, 1, 128]
 
         #get the xyz
         coord = tf_util2.conv2d(net, 64, [1, 1],
