@@ -98,8 +98,8 @@ if __name__=='__main__':
         now = time.time() 
         for _ in range(100):
             ret = sess.run(grouped_points)
-        print(time.time() - now)
-        print(ret.shape, ret.dtype)
-        print(ret)
+        print time.time() - now
+        print ret.shape, ret.dtype
+        print ret
     
     

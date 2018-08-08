@@ -1,7 +1,10 @@
+from __future__ import print_function
+
 import numpy as np
 import h5py
 import time
-import queue
+#import queue
+import Queue
 import threading
 import cv2
 from utils import show3d
@@ -215,7 +218,7 @@ def nonuniform_sampling(num = 4096, sample_num = 1024):
 class Fetcher(threading.Thread):
     def __init__(self, input_data, gt_data, radius_data,batch_size,num_point, use_random_input,use_norm):
         super(Fetcher,self).__init__()
-        self.queue = queue.Queue(50)
+        self.queue = Queue.Queue(50)
         self.stopped = False
         self.input_data = input_data
         self.gt_data = gt_data

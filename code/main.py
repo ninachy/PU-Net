@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import os
 import time
@@ -6,7 +8,11 @@ import tensorflow as tf
 from tqdm import tqdm
 from glob import glob
 import socket
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
+import matplotlib as mpl
+mpl.use('TkAgg')  # or whatever other backend that you want
+import matplotlib.pyplot as plt
+
 import model_generator2_2new6 as MODEL_GEN
 import model_utils
 import data_provider
